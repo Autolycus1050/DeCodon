@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width-device-width, initial-scale=1.0">
+	<title>DeCodon</title>
+	<style>
+	
+	body {
+		margin: 0;
+		font-family: Arial, Helvetica, sans-serif;
+		background-color: #555555;
+	}
+	.header {
+		position: relative;
+		background-color: #282828;
+		color: #2a7f1a;
+		height: 100px;
+	}
+	.cvh {
+		margin: 0;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		-ms-transform: translate(-50%, -50%);
+		transform: translate(-50%, -50%);
+	}
+	.input {
+		position: absolute;
+		left: 50%;
+		-ms-transform: translate(-50%, -50%);
+		transform: translate(-50%, -50%);
+		text-decoration: underline;
+	}
+	input[type="text"] {
+		position: absolute;
+		left: 50%;
+		-ms-transform: translate(-50%, -50%);
+		transform: translate(-50%, -50%);
+		background-color: #2a7f1a;
+		color: #ffffff;
+	}
+	.type {
+		position: absolute;
+		top: 30%;
+		left: 50%;
+		-ms-transform: translate(-50%, -50%);
+		transform: translate(-50%, -50%);
+	}
+	.strinput {
+		position: absolute;
+		top: 40%;
+		left: 50%;
+		-ms-transform: translate(-50%, -50%);
+		transform: translate(-50%, -50%);
+	}
+	.mRNA {
+		position: absolute;
+		top:50%;
+		left: 50%;
+		-ms-transform: translate(-50%, -50%);
+		transform: translate(-50%, -50%);
+	}
+	.proteins {
+		position: absolute;
+		top: 60%;
+		left: 50%;
+		-ms-transform: translate(-50%, -50%);
+		transform: translate(-50%, -50%);
+		text-decoration: underline;
+		color: #151515;
+		font-weight: bold;
+	}
+	</style>
+</head>
+
+<body>
+	<div class="header">
+		<div class="cvh">
+			<h1><i><u>DeCodon</u></i></h1>
+		</div>
+	</div>
+	<br>
+	<div class="body">
+		<label class="input" for="input">Input genetic sequence:</label>
+		<br>
+		<br>
+		<input type="text" id="input" oninput="update()">
+		<br>
+		<div class="type">
+			<label><u>Input Type:</u></label><br>
+			<input type="radio" name="what_input" id="in_mRNA" onchange="update()" checked="true">
+			<label for="in_mRNA">mRNA</label><br>
+			<input type="radio" name="what_input" id="in_DNA" onchange="update()">
+			<label for="in_DNA">DNA / tRNA</label><br>
+		</div>
+		
+		<br>
+		<div class="strinput" id="strinput">Input: </div>
+		<div class="mRNA" id="mRNA">mRNA: </div>
+		<br>
+		<div class="proteins" id="proteins">Amino Acids:</div>
+	</div>
+<script>
+	function update() {
+	var input = document.getElementById("input").value
+	var input = input.toUpperCase()
+	var displayInput = ""
+	for (i=0;i<input.length;i++) {
+		if ((i)%3 == 0) {
+			displayInput = displayInput.concat("-");
+		}
+		displayInput = displayInput.concat(input[i]);
+	}
+	document.querySelector('#strinput').innerHTML = ("Input: " + displayInput.substring(1));
+	if (document.getElementById("in_mRNA").checked == false) {
+		for (i=0;i<input.length;i++) {
+			input = input.replace("C","B");
+		}
+		for (i=0;i<input.length;i++) {
+			input = input.replace("G","C");
+		}
+		for (i=0;i<input.length;i++) {
+			input = input.replace("B","G");
+		}
+		for (i=0;i<input.length;i++) {
+			input = input.replace("U","L");
+		}
+		for (i=0;i<input.length;i++) {
+			input = input.replace("T","L");
+		}
+		for (i=0;i<input.length;i++) {
+			input = input.replace("A","U");
+		}
+		for (i=0;i<input.length;i++) {
+			input = input.replace("L","A");
+		}
+	}
+	var linput = input.split('')
+	var codons = []
+	var proteins = []
+	if ((input.length)%3 == 0) {
+	    var codonCount = input.length/3
+	    function codon(l) {
+		    var nbase1 = linput[3*l]
+	    	var nbase2 = linput[(3*l)+1]
+	    	var nbase3 = linput[(3*l)+2]
+    		protein = "INVALID"
+    		if ((nbase1 == "T") || (nbase1 == "U")) {
+    	    	if ((nbase2 == "T") || (nbase2 == "U")) {
+        			if ((nbase3 == "T") || (nbase3 == "U") || (nbase3 == "C")) {
+            			protein = "Phenylalanine"
+        			} else if ((nbase3 == "A") || (nbase3 == "G")) {
+          				protein = "Leucine"
+        			}
+      			} else if (nbase2 == "C") {
+        			protein = "Serine"
+      			} else if (nbase2 == "A") {
+        			if ((nbase3 == "T") || (nbase3 == "U") || (nbase3 == "C")) {
+          				protein = "Tyrosine"
+        			} else if ((nbase3 == "A") || (nbase3 == "G")) {
+            			protein = "STOP"
+        			}
+      			} else if (nbase2 == "G") {
+        			if ((nbase3 == "T") || (nbase3 == "U") || (nbase3 == "C")) {
+          				protein = "Cysteine"
+        			} else if ((nbase3 == "A")) {
+            			protein = "STOP"
+        			} else if ((nbase3 == "G")) {
+            			protein = "Tryptophan"
+        			}
+      			}
+    		} else if (nbase1 == "C") {
+      			if ((nbase2 == "T") || (nbase2 == "U")) {
+        			protein = "Leucine"
+      			} else if (nbase2 == "C") {
+        			protein = "Proline"
+      			} else if (nbase2 == "A") {
+        			if ((nbase3 == "T") || (nbase3 == "U") || (nbase3 == "C")) {
+          				protein = "Histidine"
+        			} else if ((nbase3 == "A") || (nbase3 == "G")) {
+          				protein = "Glutamine"
+        			}
+      			} else if (nbase2 == "G") {
+        			protein = "Arginine"
+      			}
+    		} else if (nbase1 == "A") {
+      			if ((nbase2 == "T") || (nbase2 == "U")) {
+        			if ((nbase3 == "T") || (nbase3 == "U") || (nbase3 == "C") || (nbase3 == "A")) {
+          				protein = "Isoleucine"
+        			} else if ((nbase3 == "G")) {
+            			protein = "START (Methionine)"
+        			}
+      			} else if (nbase2 == "C") {
+        			protein = "Threonine"
+      			} else if (nbase2 == "A") {
+        			if ((nbase3 == "T") || (nbase3 == "U") || (nbase3 == "C")) {
+          				protein = "Asparagine"
+        			} else if ((nbase3 == "A") || (nbase3 == "G")) {
+          				protein = "Lysine"
+        			}
+      			} else if (nbase2 == "G") {
+        			if ((nbase3 == "T") || (nbase3 == "U") || (nbase3 == "C")) {
+          				protein = "Serine"
+        			} else if ((nbase3 == "A") || (nbase3 == "G")) {
+          				protein = "Arginine"
+        			}
+      			}
+    		} else if (nbase1 == "G") {
+      			if ((nbase2 == "T") || (nbase2 == "U")) {
+        			protein = "Valine"
+      			} else if (nbase2 == "C") {
+        			protein = "Alanine"
+      			} else if (nbase2 == "A") {
+        			if ((nbase3 == "T") || (nbase3 == "U") || (nbase3 == "C")) {
+          				protein = "Aspartic acid"
+        			} else if ((nbase3 == "A") || (nbase3 == "G")) {
+        			    protein = "Glutamic acid"
+        			}
+      			} else if (nbase2 == "G") {
+        			protein = "Glycine"
+      			}
+    		}
+    		return [nbase1.concat(nbase2,nbase3),protein]
+    	}
+    	for (i=0;i<linput.length/3;i++) {
+    		codons.push(codon(i)[0])
+    		proteins.push(codon(i)[1])
+    	}
+  		document.querySelector('#mRNA').innerHTML = "mRNA: " + codons.join(" - ")
+  		document.querySelector('#proteins').innerHTML = "Amino Acids: " + proteins.join(", ")
+	} else {
+ 		document.querySelector('#mRNA').innerHTML = "ERROR: Incomplete Codon(s)"
+  		document.querySelector('#proteins').innerHTML = "Mutation or Typo occured"
+	}
+	}
+</script>
+</body>
+</html>
